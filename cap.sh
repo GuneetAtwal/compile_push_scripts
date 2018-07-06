@@ -33,14 +33,18 @@ push_launcher3()
 		make Launcher3 -j$N
 	fi
 	adb start-server
+	#Stop launcher3 by disabling it
+	adb shell pm disable com.android.launcher3.
 	#remount /system as rw
 	adb remount
 	#push the apk
 	adb push $OUT/system/app/Launcher3/Launcher3.apk /system/app/Launcher3/Launcher3.apk
 	#fix permissions
 	adb shell chmod 0644 /system/app/Launcher3/Launcher3.apk
-	#reboot after pushing
-	adb reboot
+	sleep 1
+	#start launcher3 back again
+	adb shell pm enable com.android.launcher3
+	adb shell am start com.android.launcher3/com.android.launcher3.Launcher
 }
 
 case $choice in

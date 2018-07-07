@@ -47,6 +47,25 @@ push_launcher3()
 	adb shell am start com.android.launcher3/com.android.launcher3.Launcher
 }
 
+push_framework_jar()
+{
+	if [ $choice -eq 5 ]; then
+		. build/envsetup.sh
+		lunch 38
+		make framework -j$N
+	fi
+	adb start-server 
+	#remount /system as rw
+	adb remount
+	#push the apk
+	adb push $OUT/system/framework/framework.jar /system/framework/framework.jar
+	#fix permissions
+	adb shell chmod 0644 /system/framework/framework.jar
+	sleep 1
+	#perform a soft reboot
+	adb shell ps | grep zygote | awk '{print $2}' | xargs adb shell kill
+}
+
 case $choice in
 	1)
 		echo "Compiling and Pushing SystemUI"
@@ -63,6 +82,14 @@ case $choice in
 	4)
 		echo "Only Pushing Launcher3"
 		push_launcher3
+		;;
+	5)
+		echo "Compiling and Pushing framework.jar"
+		push_framework_jar
+		;;
+	6)
+		echo "Only pushing framework.jar"
+		push_framework_jar
 		;;
 	*)
 		echo "You high nigga ?"

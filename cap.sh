@@ -66,6 +66,25 @@ push_framework_jar()
 	adb shell ps | grep zygote | awk '{print $2}' | xargs adb shell kill
 }
 
+push_services()
+{
+	if [ $choice -eq 7 ]; then
+		. build/envsetup.sh
+		lunch 38
+		make services -j$N
+	fi
+	adb start-server 
+	#remount /system as rw
+	adb remount
+	#push the apk
+	adb push $OUT/system/framework/services.jar /system/framework/services.jar
+	#fix permissions
+	adb shell chmod 0644 /system/framework/services.jar
+	sleep 1
+	#perform a soft reboot
+	adb shell ps | grep zygote | awk '{print $2}' | xargs adb shell kill
+}
+
 case $choice in
 	1)
 		echo "Compiling and Pushing SystemUI"
@@ -90,6 +109,14 @@ case $choice in
 	6)
 		echo "Only pushing framework.jar"
 		push_framework_jar
+		;;
+	7)
+		echo "Compiling and Pushing services"
+		push_services
+		;;
+	8)
+		echo "Only pushing services"
+		push_services
 		;;
 	*)
 		echo "You high nigga ?"

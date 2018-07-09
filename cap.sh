@@ -67,6 +67,25 @@ push_framework_jar()
 	adb shell ps | grep zygote | awk '{print $2}' | xargs adb shell kill
 }
 
+push_framework_res()
+{
+	if [ $choice -eq 9 ]; then
+		. build/envsetup.sh
+		lunch 38
+		make framework-res -j$N
+	fi
+	adb start-server 
+	#remount /system as rw
+	adb remount
+	#push the apk
+	adb push $OUT/system/framework/framework-res.apk /system/framework/framework-res.apk
+	#fix permissions
+	adb shell chmod 0644 /system/framework/framework-res.apk
+	sleep 1
+	#perform a soft reboot
+	adb shell ps | grep zygote | awk '{print $2}' | xargs adb shell kill
+}
+
 push_services()
 {
 	if [ $choice -eq 7 ]; then
@@ -118,6 +137,14 @@ case $choice in
 	8)
 		echo "Only pushing services"
 		push_services
+		;;
+	9)
+		echo "Compiling and Pushing framework-res"
+		push_framework_res
+		;;
+	10)
+		echo "Only pushing framework-res"
+		push_framework_res
 		;;
 	*)
 		echo "You high nigga ?"

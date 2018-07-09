@@ -1,4 +1,7 @@
 #!/bin/bash
+
+#Default number of threads is 4
+N=4
 choice=$1
 N=$2
 

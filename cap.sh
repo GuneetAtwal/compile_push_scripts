@@ -59,6 +59,7 @@ push_framework_jar()
 	adb remount
 	#push the apk
 	adb push $OUT/system/framework/framework.jar /system/framework/framework.jar
+	adb push $OUT/system/framework/arm/* /system/framework/arm/
 	#fix permissions
 	adb shell chmod 0644 /system/framework/framework.jar
 	sleep 1
